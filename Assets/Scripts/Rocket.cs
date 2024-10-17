@@ -1,6 +1,6 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -10,23 +10,42 @@ public class Rocket : MonoBehaviour
     private readonly float SPEED = 5f;
     private readonly float FUELPERSHOOT = 10f;
 
-    int score = 0;
+    private float currentScore = 0f;
+    private float highScore = 0f;
 
-    [SerializeField] private TextMeshProUGUI CurrentScoreTxt;
-    [SerializeField] private TextMeshProUGUI HighScoreTxt;
+    [SerializeField] private TextMeshProUGUI currentScoreTxt;
+    [SerializeField] private TextMeshProUGUI highScoreTxt;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    
+
+    void Update()
+    {
+        currentScore = transform.position.y;
+
+        if (currentScore > highScore)
+        {
+            highScore = currentScore;
+        }
+
+        currentScoreTxt.text = $"{currentScore:F0} M";
+        highScoreTxt.text = $"High : {highScore:F0} M";
+    }
+
     public void Shoot()
     {
-        if (fuel > FUELPERSHOOT)
+        if (fuel >= FUELPERSHOOT)
         {
             rb.AddForce(Vector2.up * SPEED, ForceMode2D.Impulse);
             fuel -= FUELPERSHOOT;
         }
+    }
 
+    public void RestartGame()
+    {
+        Destroy(gameObject);
+        SceneManager.LoadScene("RocketLauncher");
     }
 }
